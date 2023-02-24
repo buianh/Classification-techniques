@@ -1,0 +1,48 @@
+---
+title: "MaiAnh_PCA"
+author: "Mai Anh Bui"
+date: "10/18/2022"
+output: pdf_document
+---
+
+```{r}
+library(dplyr)
+library(ggfortify)
+data_file=readxl::read_xlsx("CCIHE2021-PublicData.xlsx", sheet='Data') %>% select('name','basic2021', 'serd','nonserd','pdnfrstaff','socsc_rsd','hum_rsd','stem_rsd','oth_rsd','facnum') %>% filter(basic2021==15|basic2021==16)
+
+#calculate mean and variance
+data_file_input=data_file %>% select(-('name')) %>% select(-('basic2021'))
+apply(data_file_input,2,mean)
+apply(data_file_input,2,var)
+#Build a histogram
+par(mfrow=c(2,2))
+for (col in 1:ncol(data_file_input)) {
+  hist(unlist(data_file_input[,col]), main = paste("Histogram of", names(data_file_input)[col]),xlab = 'Count')
+}
+
+#Standardize data matrix
+#standard_data = scale(data_file_input)
+#Importance of principal components, scale=TRUE so no need to standardize beforehand
+#pZ1 = prcomp(standard_data,scale=FALSE)
+#summary(pZ1)
+pZ2 = prcomp(data_file_input,center=TRUE, scale=TRUE)
+summary(pZ2)
+
+#Obtain principal vectors, display 2 loadings
+loading_matrix = pZ2$rotation
+loading_matrix[,1:2]
+
+#Get the score for each institution
+score_matrix = pZ2$x
+head(score_matrix[,1:2])
+
+autoplot(pZ2,label=TRUE, label.size=3, shape=TRUE, loadings=TRUE, loadings.label=TRUE, scale=0)
+
+#Calculate standardized Euclidean distance formula (square root of sum of squared index)
+score_matrix_2pc=score_matrix[,1:2]
+institution_score=sqrt(score_matrix_2pc[,1]^2+score_matrix_2pc[,2]^2)
+institution_result=data.frame(data_file$name,institution_score)[order(institution_score),] %>% mutate(observation = 1:n()) %>% mutate(PCA7_1category=ifelse(observation<134,16,15)) %>% merge(.,data_file,by.x='data_file.name',by.y='name') %>% select('data_file.name','institution_score','observation','PCA7_1category','basic2021') 
+write.csv(institution_result,"institution_result.csv", row.names = FALSE)
+
+```
+
