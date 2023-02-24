@@ -1,2 +1,3 @@
 # Classification-techniques
-My effort to improve the prediction accuracy rate from 50 percent to 95 percent using the unsupervised and supervised machine learning methods in R and Python
+My effort to improve the prediction accuracy rate from 50 percent to 95 percent using the unsupervised and supervised machine learning methods in R and Python for education data.
+The folder includes a Python program that includes supervised learning techniques (decision tree, random forest, and XGBoost), an R program that includes unsupervised learning technique (Principal Component Analysis). I include 2 presentations and 1 written document to illustrate the benefits of using the supervised learning technique in my effort to improve the prediction rate to 95 percent.
